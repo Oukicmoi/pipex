@@ -1,0 +1,4 @@
+WIFEXITED(status) : renvoie vrai si le fils s’est terminé normalement, par exemple en faisant appel à exit ou en terminant via la fonction principale, main. 
+
+WEXITSTATUS(status) : a utiliser uniquement si WIFEXITED a renvoyé vrai. Renvoie le code de sortie du fils, 
+                      c’est à dire le nombre que le fils a spécifié lors de son appel à exit ou lors de son retour dans le main.
