@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:12:08 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/07/16 17:47:44 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/07/16 18:09:41 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,13 @@ int	main(int ac, char **av, char **envp)
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
-	infile_fd = open("file1", O_RDONLY);
+	infile_fd = open(av[1], O_RDONLY);
 	if (infile_fd == -1)
 	{
 		perror("open");
 		exit(EXIT_FAILURE);
 	}
-	outfile_fd = open("file2", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	outfile_fd = open(av[ac-1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (outfile_fd == -1)
 	{
 		perror("open");

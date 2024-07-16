@@ -1,0 +1,7 @@
+Une table des fichiers ouverts qui est commune à tous les processus. Chaque entrée de ce tableau contient, entres
+ autres, le mode d’accès, la tête de lecture du fichier, et un pointeur vers l’entrée correspondante dans la table inode. 
+ 
+ Cette table garde aussi un compte du nombre de références à ce fichier dans toutes les tables de descripteurs de tous les pr
+ ocessus. Lorsqu’un processus ferme le fichier, ce compte est décrémenté et s’il arrive à 0, l’entrée est supprimée de la table des fichiers.
+Et enfin, une table inode (index node) qui est aussi commune à tous les processus. Chaque entrée dans la table inode décr
+it en détail le fichier en que
