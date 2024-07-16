@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:12:08 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/07/11 20:01:05 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/07/16 16:38:16 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,38 +14,81 @@
 
 int	main(int ac, char **av, char **envp)
 {
-	int	pipefd[2];  // Stocke les fd du pipe :
-			    //  - pipefd[0] : lecture seule
-			    //  - pipefd[1] : écriture seule
-	pid_t	pid, pid2;	// Stocke le retour de fork
-	char	buf;	// Stocke la lecture de read
-        int     i;
+	int	i;
+	int	prev_pipefd[2];
+	int	outfile_fd;
+	int	pipefd[2];
+	pid_t			pid;
 
-        (void)pid2;
-        (void)buf;
-        i = 2;
+	i = 2;
 	if (ac < 3)
-		return(0);
-//	Crée un pipe. En cas d'échec on arrête tout
+		return (0);
 	if (pipe(pipefd) == -1)
 	{
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
-        while(i < ac - 1)
-        {
-        //	Crée un processus fils
-                pid = fork();
-                if (pid == -1) // Echec, on arrête tout
-                {
-                        perror("fork");
-                        exit(EXIT_FAILURE);
-                }
-                else if (pid == 0) // Processus fils
-                {
-                        ft_exec(av[i],envp);
-                }
-                i++;
-        }
-           
+	outfile_fd = open("cmd2", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (outfile_fd == -1)
+	{
+		perror("open");
+		exit(EXIT_FAILURE);
+	}
+	while (i < ac - 1)
+	{
+		pid = fork();
+		if (pid == -1)
+		{
+			perror("fork");
+			exit(EXIT_FAILURE);
+		}
+		else if (pid == 0)
+		{
+			if (i > 2)
+			{
+				dup2(prev_pipefd[0], STDIN_FILENO);
+				close(prev_pipefd[0]);
+				close(prev_pipefd[1]);
+			}
+			if (i < ac - 2)
+			{
+				dup2(pipefd[1], STDOUT_FILENO);
+				close(pipefd[1]);
+				close(pipefd[0]);
+			}
+			if (i == ac - 2)
+			{
+				dup2(outfile_fd, STDOUT_FILENO);
+				close(outfile_fd);
+				close(pipefd[0]);
+				close(pipefd[1]);
+			}
+			ft_exec(av[i], envp);
+		}
+		else
+		{
+			if (i > 2)
+			{
+				close(prev_pipefd[0]);
+				close(prev_pipefd[1]);
+			}
+			prev_pipefd[0] = pipefd[0];
+			prev_pipefd[1] = pipefd[1];
+			if (i < ac - 2)
+			{
+				if (pipe(pipefd) == -1)
+				{
+					perror("pipe");
+					exit(EXIT_FAILURE);
+				}
+			}
+		}
+		i++;
+	}
+	close(outfile_fd);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	while (wait(NULL) > 0)
+		;
+	return (0);
 }
