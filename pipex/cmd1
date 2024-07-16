@@ -1,6 +1,1 @@
-ce fils est un clone du père, il va avoir exactement le même code que le processus père. Pourtant, on va sans doute vouloir
-
-donner au fils des instructions différentes
-                de celles du père. Cette valeur de retour de fork, un nombre de type pid_t, 
-ne retourne pas le même PID au père et au fils, ce qui nous permet de les différencier. Voici les valeurs de retour possibles de la fonction fork :Comme le fils est un clone du père, il va avoir exactement le même code que le processus père. Pourtant, on va sans doute vouloir
 

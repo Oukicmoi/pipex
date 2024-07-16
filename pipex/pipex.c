@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:12:08 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/07/16 16:38:16 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/07/16 17:47:44 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ int	main(int ac, char **av, char **envp)
 	int	i;
 	int	prev_pipefd[2];
 	int	outfile_fd;
+	int	infile_fd;
 	int	pipefd[2];
 	pid_t			pid;
 
@@ -28,7 +29,13 @@ int	main(int ac, char **av, char **envp)
 		perror("pipe");
 		exit(EXIT_FAILURE);
 	}
-	outfile_fd = open("cmd2", O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	infile_fd = open("file1", O_RDONLY);
+	if (infile_fd == -1)
+	{
+		perror("open");
+		exit(EXIT_FAILURE);
+	}
+	outfile_fd = open("file2", O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (outfile_fd == -1)
 	{
 		perror("open");
@@ -44,6 +51,11 @@ int	main(int ac, char **av, char **envp)
 		}
 		else if (pid == 0)
 		{
+			if (i == 2)
+			{
+				dup2(infile_fd, STDIN_FILENO);
+				close(infile_fd);
+			}
 			if (i > 2)
 			{
 				dup2(prev_pipefd[0], STDIN_FILENO);
