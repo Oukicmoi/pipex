@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:25:28 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/07/16 16:34:47 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/07/16 19:12:11 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,5 +24,6 @@ char	**ft_get_path(char **envp);
 int		ft_access(char **tab, char *avi, char **PATH);
 int		ft_exec(char *argi, char **envp);
 int		main(int ac, char **av, char **envp);
+void	        dblclose(int	*pipe);
 
 #endif

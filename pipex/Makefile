@@ -6,14 +6,14 @@
 #    By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 16:45:54 by gtraiman          #+#    #+#              #
-#    Updated: 2024/07/11 19:15:57 by gtraiman         ###   ########.fr        #
+#    Updated: 2024/07/16 18:32:21 by gtraiman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME        = pipex
 AR            = ar rcs
 CC            = cc 
-CFLAGS        = -Werror -Wall -Wextra -I .
+CFLAGS        = -Werror -Wall -Wextra -I . -g3
 
 PATH_LIBFT = libft
 LIBFT = ${PATH_LIBFT}/libft.a

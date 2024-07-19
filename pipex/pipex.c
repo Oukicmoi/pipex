@@ -6,11 +6,16 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:12:08 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/07/16 18:09:41 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/07/19 20:31:16 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+// pipefds leakent dans les childs
+// open leak en cas de fail
+// crash quand env ou PATH est NULL
+// split leak
 
 int	main(int ac, char **av, char **envp)
 {
@@ -22,12 +27,11 @@ int	main(int ac, char **av, char **envp)
 	pid_t			pid;
 
 	i = 2;
-	if (ac < 3)
+	if (ac < 5)
 		return (0);
-	if (pipe(pipefd) == -1)
+	if (!envp)
 	{
-		perror("pipe");
-		exit(EXIT_FAILURE);
+		return(0);
 	}
 	infile_fd = open(av[1], O_RDONLY);
 	if (infile_fd == -1)
@@ -38,15 +42,24 @@ int	main(int ac, char **av, char **envp)
 	outfile_fd = open(av[ac-1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (outfile_fd == -1)
 	{
+		close(infile_fd);
 		perror("open");
 		exit(EXIT_FAILURE);
 	}
 	while (i < ac - 1)
 	{
+		if (pipe(pipefd) == -1)
+		{
+			perror("pipe");
+			exit(EXIT_FAILURE);
+		}
 		pid = fork();
 		if (pid == -1)
 		{
 			perror("fork");
+			close(infile_fd);
+			close(outfile_fd);
+			dblclose(pipefd);
 			exit(EXIT_FAILURE);
 		}
 		else if (pid == 0)
@@ -56,50 +69,51 @@ int	main(int ac, char **av, char **envp)
 				dup2(infile_fd, STDIN_FILENO);
 				close(infile_fd);
 			}
-			if (i > 2)
+			else if (i > 2)
 			{
 				dup2(prev_pipefd[0], STDIN_FILENO);
-				close(prev_pipefd[0]);
-				close(prev_pipefd[1]);
+				dblclose(prev_pipefd);
+
 			}
 			if (i < ac - 2)
 			{
 				dup2(pipefd[1], STDOUT_FILENO);
-				close(pipefd[1]);
-				close(pipefd[0]);
+				dblclose(pipefd);
+
 			}
-			if (i == ac - 2)
+			else if (i == ac - 2)
 			{
 				dup2(outfile_fd, STDOUT_FILENO);
 				close(outfile_fd);
-				close(pipefd[0]);
-				close(pipefd[1]);
+				dblclose(pipefd);
 			}
 			ft_exec(av[i], envp);
+			exit(EXIT_FAILURE);
 		}
 		else
 		{
 			if (i > 2)
 			{
-				close(prev_pipefd[0]);
-				close(prev_pipefd[1]);
+				dblclose(prev_pipefd);
 			}
 			prev_pipefd[0] = pipefd[0];
 			prev_pipefd[1] = pipefd[1];
+			close(pipefd[1]);
 			if (i < ac - 2)
 			{
 				if (pipe(pipefd) == -1)
 				{
-					perror("pipe");
+					perror("pipe");]
 					exit(EXIT_FAILURE);
 				}
 			}
+			dprintf(2, "pipefd[0] %d || pipefd[1] %d\n || outfile_fd %d || infile_fd %d\n ", pipefd[0], pipefd[1], outfile_fd, infile_fd);
 		}
 		i++;
 	}
+	close(infile_fd);
 	close(outfile_fd);
-	close(pipefd[0]);
-	close(pipefd[1]);
+	dblclose(pipefd);
 	while (wait(NULL) > 0)
 		;
 	return (0);
