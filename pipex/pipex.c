@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/08 11:12:08 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/07/19 20:31:16 by gtraiman         ###   ########.fr       */
+/*   Created: 2024/07/20 23:48:17 by gtraiman          #+#    #+#             */
+/*   Updated: 2024/07/21 01:30:25 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,105 +16,73 @@
 // open leak en cas de fail
 // crash quand env ou PATH est NULL
 // split leak
+int     openfd(openfile *inout,int ac,char **av)
+{
+	inout->infile_fd = open(av[1], O_RDONLY);
+	if (inout->infile_fd == -1)
+	{
+		perror("open");
+                return(-1);
+	}
+	inout->outfile_fd = open(av[ac-1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (inout->outfile_fd == -1)
+	{
+		close(inout->infile_fd);
+		perror("open");
+                return(-1);
+	}
+        return(0);
+}
+
+int     dup_in(char *argi, int pipefd, pid_t pid,openfile *inout)
+{
+
+	pid = fork();
+        if (pid == -1)
+        {
+                perror("fork");
+                close(inout->infile_fd);
+                close(inout->outfile_fd);
+                dblclose(pipefd);
+                exit(EXIT_FAILURE);
+        }
+        if(pid == 0)
+        {
+                // dup2
+        }
+
+}
 
 int	main(int ac, char **av, char **envp)
 {
 	int	i;
-	int	prev_pipefd[2];
-	int	outfile_fd;
-	int	infile_fd;
 	int	pipefd[2];
 	pid_t			pid;
+        openfile                inout;
 
 	i = 2;
 	if (ac < 5)
 		return (0);
 	if (!envp)
-	{
 		return(0);
-	}
-	infile_fd = open(av[1], O_RDONLY);
-	if (infile_fd == -1)
-	{
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-	outfile_fd = open(av[ac-1], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-	if (outfile_fd == -1)
-	{
-		close(infile_fd);
-		perror("open");
-		exit(EXIT_FAILURE);
-	}
-	while (i < ac - 1)
-	{
-		if (pipe(pipefd) == -1)
-		{
-			perror("pipe");
-			exit(EXIT_FAILURE);
-		}
-		pid = fork();
-		if (pid == -1)
-		{
-			perror("fork");
-			close(infile_fd);
-			close(outfile_fd);
-			dblclose(pipefd);
-			exit(EXIT_FAILURE);
-		}
-		else if (pid == 0)
-		{
-			if (i == 2)
-			{
-				dup2(infile_fd, STDIN_FILENO);
-				close(infile_fd);
-			}
-			else if (i > 2)
-			{
-				dup2(prev_pipefd[0], STDIN_FILENO);
-				dblclose(prev_pipefd);
-
-			}
-			if (i < ac - 2)
-			{
-				dup2(pipefd[1], STDOUT_FILENO);
-				dblclose(pipefd);
-
-			}
-			else if (i == ac - 2)
-			{
-				dup2(outfile_fd, STDOUT_FILENO);
-				close(outfile_fd);
-				dblclose(pipefd);
-			}
-			ft_exec(av[i], envp);
-			exit(EXIT_FAILURE);
-		}
-		else
-		{
-			if (i > 2)
-			{
-				dblclose(prev_pipefd);
-			}
-			prev_pipefd[0] = pipefd[0];
-			prev_pipefd[1] = pipefd[1];
-			close(pipefd[1]);
-			if (i < ac - 2)
-			{
-				if (pipe(pipefd) == -1)
-				{
-					perror("pipe");]
-					exit(EXIT_FAILURE);
-				}
-			}
-			dprintf(2, "pipefd[0] %d || pipefd[1] %d\n || outfile_fd %d || infile_fd %d\n ", pipefd[0], pipefd[1], outfile_fd, infile_fd);
-		}
-		i++;
-	}
-	close(infile_fd);
-	close(outfile_fd);
-	dblclose(pipefd);
-	while (wait(NULL) > 0)
-		;
-	return (0);
+        if(openfd(&inout,ac,av) == -1)
+                exit(EXIT_FAILURE);
+        while(i < ac - 2)
+        {
+                if (pipe(pipefd) == -1)
+                {
+                        perror("pipe");
+                        return(-1);
+                }
+                close(pipefd[1]);
+                if(i == 2)
+                {
+                        if(dup_in(av[i],inout.infile_fd, pid, &inout) == -1)
+                                exit(EXIT_FAILURE);
+                }
+                else if(dup_in(av[i], pipefd[0], pid, &inout) == -1)
+                        exit(EXIT_FAILURE);
+        }
+        close(inout.infile_fd);
+        close(inout.outfile_fd);
 }
