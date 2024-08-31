@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 23:26:59 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/07/18 23:27:02 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/08/31 17:19:03 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,16 +52,16 @@ char	**ft_get_path(char **envp)
 
 int	ft_access(char **tab, char *avi, char **path)
 {
-	int	j;
+	int		j;
 	char	*temp;
 
 	j = 0;
 	while (tab[j])
 	{
 		temp = ft_strjoin(tab[j], "/");
-		free(tab[j]); // Free the old string
+		free(tab[j]);
 		tab[j] = ft_strjoin(temp, avi);
-		free(temp); // Free the intermediate string
+		free(temp);
 		if (access(tab[j], F_OK) == 0)
 		{
 			if (access(tab[j], X_OK) == 0)

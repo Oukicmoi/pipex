@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:25:28 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/07/21 00:26:26 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/08/31 17:18:36 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,16 +20,18 @@
 # include <sys/wait.h>
 # include <unistd.h>
 
-char	**ft_get_path(char **envp);
-int		ft_access(char **tab, char *avi, char **PATH);
-int		ft_exec(char *argi, char **envp);
-int		main(int ac, char **av, char **envp);
-void	        dblclose(int	*pipe);
+char		**ft_get_path(char **envp);
+int			ft_access(char **tab, char *avi, char **PATH);
+int			ft_exec(char *argi, char **envp);
+int			main(int ac, char **av, char **envp);
+void		dblclose(int *pipe);
 
 typedef struct openfile
 {
-	int     infile_fd;
-	int     outfile_fd;
-}					openfile;
+	int		infile_fd;
+	int		outfile_fd;
+	int		argc;
+	char	**argv;
+}			t_openfile;
 
 #endif
