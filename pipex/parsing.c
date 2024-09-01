@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 23:26:59 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/08/31 17:19:03 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/01 12:54:25 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,8 +52,8 @@ char	**ft_get_path(char **envp)
 
 int	ft_access(char **tab, char *avi, char **path)
 {
-	int		j;
-	char	*temp;
+	int			j;
+	char		*temp;
 
 	j = 0;
 	while (tab[j])

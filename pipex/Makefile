@@ -6,7 +6,7 @@
 #    By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 16:45:54 by gtraiman          #+#    #+#              #
-#    Updated: 2024/07/16 18:32:21 by gtraiman         ###   ########.fr        #
+#    Updated: 2024/09/01 12:58:42 by gtraiman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,9 @@ PATH_LIBFT = libft
 LIBFT = ${PATH_LIBFT}/libft.a
 
 SRCS	=	parsing.c \
-		pipex.c \
+			utils.c \
+			pipex.c \
+
         	
 
 
@@ -36,7 +38,7 @@ ${NAME}: ${OBJS_FILES}
     
 
 ${LIBFT}:
-	${MAKE} -C ${PATH_LIBFT}
+	${MAKE} -C ${PATH_LIBFT} > /dev/null
 
 clean:
 	rm -f ${OBJS_FILES}
