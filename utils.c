@@ -47,3 +47,30 @@ int	dblclosin(t_openfile *inout)
 	close(inout->outfile_fd);
 	return (0);
 }
+
+
+int waitprocess(int *tabpid) {
+    int i = 0;
+    int status;
+    pid_t result;
+
+    while (tabpid[i]) {
+        result = waitpid(tabpid[i], &status, 0);
+
+        if (result == -1) {
+            perror("waitpid");
+            return -1;
+        }
+
+        if (WIFEXITED(status))
+            printf("Processus %d terminé avec le code de sortie %d\n", tabpid[i], WEXITSTATUS(status));
+	else if (WIFSIGNALED(status))
+		printf("Processus %d tué par le signal %d\n", tabpid[i], WTERMSIG(status));
+	else 
+		printf("Processus %d terminé de manière inattendue\n", tabpid[i]);
+
+        i++;
+    }
+
+    return 0;
+}

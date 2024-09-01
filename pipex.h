@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:25:28 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/01 12:55:34 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/01 21:25:46 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ int		openfd(t_openfile *inout);
 int		makeapipe(int *pipefd);
 int		dup_in(pid_t *pid, t_openfile *inout, char **envp, int ppipefd[2]);
 int		last_dup(t_openfile *inout, int i, char **envp);
-int		all_dup(t_openfile inout, char **envp);
+int		all_dup(t_openfile inout, char **envp, int tabpid[]);
 int		ifdup(t_openfile inout, int *pipefd, int i);
+int		waitprocess(int	*tabpid);
 
 #endif

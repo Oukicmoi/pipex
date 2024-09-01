@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/01 12:05:50 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/01 12:51:17 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/01 21:24:43 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ int	last_dup(t_openfile *inout, int i, char **envp)
 	return (0);
 }
 
-int	all_dup(t_openfile inout, char **envp)
+int	all_dup(t_openfile inout, char **envp, int tabpid[])
 {
 	pid_t		pid;
 	int			ppipefd[2];
@@ -83,10 +83,12 @@ int	all_dup(t_openfile inout, char **envp)
 	inout.i = 2;
 	while (inout.i < inout.argc - 2)
 	{
+		tabpid[inout.i - 2] = pid;
 		if (dup_in(&pid, &inout, envp, ppipefd) == -1)
 			return (-1);
 		inout.i++;
 	}
+	tabpid[inout.i - 2] = pid;
 	if (last_dup(&inout, inout.i, envp) == -1)
 		return (-1);
 	close(ppipefd[0]);
@@ -95,6 +97,7 @@ int	all_dup(t_openfile inout, char **envp)
 
 int	main(int ac, char **av, char **envp)
 {
+	int		tabpid[ac - 3];
 	pid_t		pid;
 	t_openfile	inout;
 
@@ -114,10 +117,9 @@ int	main(int ac, char **av, char **envp)
 	{
 		if (openfd(&inout) == -1)
 			exit(EXIT_FAILURE);
-		if (all_dup(inout, envp) == -1)
+		if (all_dup(inout, envp, tabpid) == -1)
 			exit(EXIT_FAILURE);
 	}
-	while (wait(NULL) > 0)
-		;
+	waitprocess(tabpid);
 	return (0);
 }
