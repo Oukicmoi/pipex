@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2024/09/01 12:20:27 by gtraiman          #+#    #+#             */
 /*   Updated: 2024/09/01 12:20:27 by gtraiman         ###   ########.fr       */
 /*                                                                            */
@@ -48,29 +51,23 @@ int	dblclosin(t_openfile *inout)
 	return (0);
 }
 
+int	waitprocess(int *tabpid, t_openfile *inout)
+{
+	int		i;
+	int		status;
+	pid_t	result;
 
-int waitprocess(int *tabpid) {
-    int i = 0;
-    int status;
-    pid_t result;
-
-    while (tabpid[i]) {
-        result = waitpid(tabpid[i], &status, 0);
-
-        if (result == -1) {
-            perror("waitpid");
-            return -1;
-        }
-
-        if (WIFEXITED(status))
-            printf("Processus %d terminé avec le code de sortie %d\n", tabpid[i], WEXITSTATUS(status));
-	else if (WIFSIGNALED(status))
-		printf("Processus %d tué par le signal %d\n", tabpid[i], WTERMSIG(status));
-	else 
-		printf("Processus %d terminé de manière inattendue\n", tabpid[i]);
-
-        i++;
-    }
-
-    return 0;
+	i = 0;
+	while (i <= inout->argc - 3)
+	{
+		printf("pid : %d\n", tabpid[i]);
+		result = waitpid(tabpid[i], &status, 0);
+		if (result == -1)
+		{
+			perror("waitpid");
+			return (-1);
+		}
+		i++;
+	}
+	return (0);
 }

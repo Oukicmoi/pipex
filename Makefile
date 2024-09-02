@@ -6,7 +6,7 @@
 #    By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 16:45:54 by gtraiman          #+#    #+#              #
-#    Updated: 2024/09/01 12:58:42 by gtraiman         ###   ########.fr        #
+#    Updated: 2024/09/02 23:00:30 by gtraiman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,12 +42,12 @@ ${LIBFT}:
 
 clean:
 	rm -f ${OBJS_FILES}
-	${MAKE} -C  ${PATH_LIBFT} clean
+	${MAKE} -C  ${PATH_LIBFT} clean > /dev/null
 
 
 fclean: clean
 	rm -f ${NAME}
-	${MAKE} -C ${PATH_LIBFT} fclean 
+	${MAKE} -C ${PATH_LIBFT} fclean > /dev/null
 
 re: fclean all
 

@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/01 12:05:50 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/01 21:24:43 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/02 23:04:47 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,29 @@ int	dup_in(pid_t *pid, t_openfile *inout, char **envp, int ppipefd[2])
 	return (0);
 }
 
-int	last_dup(t_openfile *inout, int i, char **envp)
+int	last_dup(t_openfile *inout, int i, char **envp, int tabpid[])
 {
-	dup2(inout->outfile_fd, STDOUT_FILENO);
-	close(inout->outfile_fd);
-	close(inout->infile_fd);
-	if (ft_exec(inout->argv[i], envp) == -1)
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == -1)
 	{
-		perror("execve");
-		return (-1);
+		perror("fork");
+		exit(EXIT_FAILURE);
 	}
+	if (pid == 0)
+	{
+		dup2(inout->outfile_fd, STDOUT_FILENO);
+		close(inout->outfile_fd);
+		close(inout->infile_fd);
+		if (ft_exec(inout->argv[i], envp) == -1)
+		{
+			perror("execve");
+			return (-1);
+		}
+		
+	}
+	tabpid[i] = pid;
 	exit(EXIT_SUCCESS);
 	return (0);
 }
@@ -88,38 +101,31 @@ int	all_dup(t_openfile inout, char **envp, int tabpid[])
 			return (-1);
 		inout.i++;
 	}
-	tabpid[inout.i - 2] = pid;
-	if (last_dup(&inout, inout.i, envp) == -1)
-		return (-1);
 	close(ppipefd[0]);
 	return (0);
 }
 
 int	main(int ac, char **av, char **envp)
 {
-	int		tabpid[ac - 3];
-	pid_t		pid;
+	int			*tabpid;
 	t_openfile	inout;
 
+	tabpid = (int *) malloc ((ac - 3) * sizeof (int));
 	inout.argc = ac;
 	inout.argv = av;
 	if (ac < 5)
 		return (0);
 	if (!envp)
 		return (0);
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
+	if (openfd(&inout) == -1)
 		exit(EXIT_FAILURE);
-	}
-	if (pid == 0)
-	{
-		if (openfd(&inout) == -1)
-			exit(EXIT_FAILURE);
-		if (all_dup(inout, envp, tabpid) == -1)
-			exit(EXIT_FAILURE);
-	}
-	waitprocess(tabpid);
+	if (all_dup(inout, envp, tabpid) == -1)
+		exit(EXIT_FAILURE);
+	if (last_dup(&inout, ac - 2, envp, tabpid) == -1)
+		return (-1);
+	close(inout.infile_fd);
+	close(inout.outfile_fd);
+	free(tabpid);
+	waitprocess(tabpid, &inout);
 	return (0);
 }
