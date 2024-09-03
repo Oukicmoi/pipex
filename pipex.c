@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/01 12:05:50 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/03 14:36:03 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/03 14:37:23 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ int	last_dup(t_openfile *inout, int i, char **envp, int tabpid[])
 		}
 		exit(EXIT_SUCCESS);
 	}
-	tabpid[i-2] = pid;
+	tabpid[i - 2] = pid;
 	return (0);
 }
 

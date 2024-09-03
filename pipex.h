@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/08 11:25:28 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/03 13:53:40 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/03 14:37:41 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,6 @@ int		last_dup(t_openfile *inout, int i, char **envp, int tabpid[]);
 int		all_dup(t_openfile inout, char **envp, int tabpid[]);
 int		ifdup(t_openfile inout, int *pipefd, int i);
 int		waitprocess(int	*tabpid, t_openfile *inout);
-void		free_split(char **split);
-
+void	free_split(char **split);
 
 #endif
