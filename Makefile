@@ -6,7 +6,7 @@
 #    By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/07/11 16:45:54 by gtraiman          #+#    #+#              #
-#    Updated: 2024/09/02 23:00:30 by gtraiman         ###   ########.fr        #
+#    Updated: 2024/09/03 19:57:44 by gtraiman         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ LIBFT = ${PATH_LIBFT}/libft.a
 SRCS	=	parsing.c \
 			utils.c \
 			pipex.c \
+			parsing2.c \
 
         	
 

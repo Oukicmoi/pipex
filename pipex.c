@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/01 12:05:50 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/03 15:45:03 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/03 22:19:34 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,6 @@ int	main(int ac, char **av, char **envp)
 	int			*tabpid;
 	t_openfile	inout;
 
-	tabpid = (int *) malloc ((ac - 3) * sizeof (int));
 	inout.argc = ac;
 	inout.argv = av;
 	if (ac < 5)
@@ -109,6 +108,9 @@ int	main(int ac, char **av, char **envp)
 		return (0);
 	if (openfd(&inout) == -1)
 		exit(EXIT_FAILURE);
+	tabpid = (int *) malloc ((ac - 3) * sizeof (int));
+	if (!tabpid)
+		return (1);
 	if (all_dup(inout, envp, tabpid) == -1)
 		exit(EXIT_FAILURE);
 	if (last_dup(&inout, ac - 2, envp, tabpid) == -1)
