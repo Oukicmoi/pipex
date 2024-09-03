@@ -58,7 +58,7 @@ int	waitprocess(int *tabpid, t_openfile *inout)
 	pid_t	result;
 
 	i = 0;
-	while (i <= inout->argc - 3)
+	while (i <= inout->argc - 4)
 	{
 		printf("pid : %d\n", tabpid[i]);
 		result = waitpid(tabpid[i], &status, 0);

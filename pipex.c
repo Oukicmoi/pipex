@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/01 12:05:50 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/02 23:04:47 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/03 14:36:03 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,10 +81,9 @@ int	last_dup(t_openfile *inout, int i, char **envp, int tabpid[])
 			perror("execve");
 			return (-1);
 		}
-		
+		exit(EXIT_SUCCESS);
 	}
-	tabpid[i] = pid;
-	exit(EXIT_SUCCESS);
+	tabpid[i-2] = pid;
 	return (0);
 }
 
@@ -96,9 +95,9 @@ int	all_dup(t_openfile inout, char **envp, int tabpid[])
 	inout.i = 2;
 	while (inout.i < inout.argc - 2)
 	{
-		tabpid[inout.i - 2] = pid;
 		if (dup_in(&pid, &inout, envp, ppipefd) == -1)
 			return (-1);
+		tabpid[inout.i - 2] = pid;
 		inout.i++;
 	}
 	close(ppipefd[0]);
@@ -125,7 +124,7 @@ int	main(int ac, char **av, char **envp)
 		return (-1);
 	close(inout.infile_fd);
 	close(inout.outfile_fd);
-	free(tabpid);
 	waitprocess(tabpid, &inout);
+	free(tabpid);
 	return (0);
 }
