@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/01 12:05:50 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/03 14:37:23 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/03 15:45:03 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,32 +14,25 @@
 
 int	ifdup(t_openfile inout, int *pipefd, int i)
 {
+	close(pipefd[0]);
 	if (i == 2)
 	{
 		dup2(inout.infile_fd, STDIN_FILENO);
 		close(inout.infile_fd);
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-		close(pipefd[0]);
 	}
 	else
-	{
-		close(pipefd[0]);
 		close(inout.infile_fd);
-		dup2(pipefd[1], STDOUT_FILENO);
-		close(pipefd[1]);
-	}
+	dup2(pipefd[1], STDOUT_FILENO);
+	close(pipefd[1]);
 	return (0);
 }
 
-int	dup_in(pid_t *pid, t_openfile *inout, char **envp, int ppipefd[2])
+int	dup_in(pid_t *pid, t_openfile *inout, char **envp)
 {
 	int	pipefd[2];
 
 	if (makeapipe(pipefd) == -1)
 		return (-1);
-	ppipefd[0] = pipefd[0];
-	ppipefd[1] = pipefd[1];
 	*pid = fork();
 	if (*pid == -1)
 	{
@@ -90,17 +83,15 @@ int	last_dup(t_openfile *inout, int i, char **envp, int tabpid[])
 int	all_dup(t_openfile inout, char **envp, int tabpid[])
 {
 	pid_t		pid;
-	int			ppipefd[2];
 
 	inout.i = 2;
 	while (inout.i < inout.argc - 2)
 	{
-		if (dup_in(&pid, &inout, envp, ppipefd) == -1)
+		if (dup_in(&pid, &inout, envp) == -1)
 			return (-1);
 		tabpid[inout.i - 2] = pid;
 		inout.i++;
 	}
-	close(ppipefd[0]);
 	return (0);
 }
 
@@ -124,6 +115,7 @@ int	main(int ac, char **av, char **envp)
 		return (-1);
 	close(inout.infile_fd);
 	close(inout.outfile_fd);
+	close(0);
 	waitprocess(tabpid, &inout);
 	free(tabpid);
 	return (0);
