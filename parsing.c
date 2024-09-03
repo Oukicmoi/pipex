@@ -6,7 +6,7 @@
 /*   By: gtraiman <gtraiman@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/18 23:26:59 by gtraiman          #+#    #+#             */
-/*   Updated: 2024/09/02 22:48:59 by gtraiman         ###   ########.fr       */
+/*   Updated: 2024/09/03 19:10:42 by gtraiman         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,35 +77,42 @@ int	ft_access(char **tab, char *avi, char **path)
 
 int	ft_exec(char *argi, char **envp)
 {
-	char	**tab;
-	char	*path;
-	char	**cmd;
-	int		ret;
+	t_execstr	ex;
 
-	path = NULL;
-	tab = ft_get_path(envp);
-	if (!tab)
+	ex.path = NULL;
+	ex.tab = ft_get_path(envp);
+	if (!ex.tab)
 		return (-1);
-	cmd = ft_split(argi, ' ');
-	if (!cmd)
+	ex.cmd = ft_split(argi, ' ');
+	if (!ex.cmd)
 	{
-		free_split(tab);
+		free_split(ex.tab);
 		return (-1);
 	}
-	ret = ft_access(tab, cmd[0], &path);
-	if (ret == 1)
+	ex.ret = ft_access(ex.tab, ex.cmd[0], &ex.path);
+	ex.i = -1;
+	if (argi[0] == '/')
 	{
-		execve(path, cmd, envp);
+		if (access (argi, R_OK) == 0)
+		{
+			while ((ft_split (argi, '/'))[ex.i + 1])
+				ex.i++;
+			execve (argi, &(ft_split(argi, '/'))[ex.i], envp);
+		}
+	}
+	execfinal(ex, envp);
+	return (0);
+}
+
+int	execfinal(t_execstr ex, char **envp)
+{
+	if (ex.ret == 1 && ex.i != -1)
+	{
+		execve(ex.path, ex.cmd, envp);
 		perror("execve");
 		exit(EXIT_FAILURE);
 	}
-	free_split(cmd);
-	free_split(tab);
-	return (-1);
-}
-
-void	dblclose(int *pipe)
-{
-	close(pipe[0]);
-	close(pipe[1]);
+	free_split(ex.cmd);
+	free_split(ex.tab);
+	return (0);
 }

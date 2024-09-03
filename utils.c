@@ -67,3 +67,9 @@ int	waitprocess(int *tabpid, t_openfile *inout)
 	}
 	return (0);
 }
+
+void	dblclose(int *pipe)
+{
+	close(pipe[0]);
+	close(pipe[1]);
+}
